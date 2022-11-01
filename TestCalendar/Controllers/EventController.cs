@@ -10,17 +10,6 @@ namespace TestCalendar.Controllers;
 [Route("[controller]")]
 public class EventsController : ControllerBase
 {
-    public static bool IsIdValid(int id)
-    {
-        foreach (var variable in Events)
-        {
-            if (variable.Id == id) { return true; }
-        }
-        return false;
-        // var notFoundResponse = new HttpResponseMessage(HttpStatusCode.NotFound);
-        //throw new HttpResponseException(notFoundResponse);
-    }
-    
     private static readonly List<Event> Events = new () 
     {
         new ()
@@ -43,18 +32,28 @@ public class EventsController : ControllerBase
         }
     };
     
+    public IActionResult IsIdValid(int id)
+    {
+        foreach (var variable in Events)
+        {
+            if (variable.Id == id)
+            {
+                return Ok();
+            }
+        }
+        return BadRequest("ID not found");
+    }
+    
     [HttpGet()]
     [Route("{id}")]
-    public Event GetById(int id)
+    public dynamic GetById(int id)
     {
-        if (IsIdValid(id))
+        if (IsIdValid(id) == OkResult) 
         {return Events[id];}
-        else
-        {
-             //Console.WriteLine();
-             BadRequest("fghjkl");
-             return Events[0];
-        }
+        
+        
+        //Нижня стрічка взагалі зайва, але компілятор без неї не пропускає
+        return BadRequest("ID not found");;
     }
 
     [HttpGet()]
