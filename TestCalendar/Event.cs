@@ -5,22 +5,29 @@ public class Event
     public int Id { get; set; }
     public string Name { get; set; }
     
-    public string Date { get; set; }
+    public string? Notes { get; set; }
     
-    public string TimeStart { get; set; }
+    public Date? Date  { get; set; }
     
-    public double TimeSpent { get; set; }
+    public Time? TimeStart { get; set; }
+    
+    public TimeSpan TimeSpent { get; set; }
     
     public int EventValue { get; set; }
+    
+    public string? Category { get; set; }
+    
+    public bool Status { get; set; }
 
     public Event() { }
 
-    public Event(int id, string name, string date, string timeStart, double timeSpent, int eventValue)
+    public Event( string name, Date date, Time timeStart, TimeSpan timeSpent, int eventValue)
     {
-        Id = id;
         Name = name;
         Date = date;
-        TimeStart = timeStart;
+        TimeStart = List<int>[
+            timeStart.Hours, 
+            timeStart.Minutes ];
         TimeSpent = timeSpent;
         EventValue = eventValue;
     }
