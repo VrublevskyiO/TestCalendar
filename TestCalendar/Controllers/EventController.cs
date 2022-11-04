@@ -40,44 +40,16 @@ public class EventsController : ControllerBase
         return false;
     }
     
-    [HttpGet()]
-    [Route("{id}")]
-    public IActionResult GetById(int id)
+    [HttpPost()]
+    public void Post(string name, DateTime date, DateTime timeStart, TimeSpan timeSpent, int eventValue)
     {
-        if (IsIdValid(id)) 
-        {return Ok(Events[id]);}
-        
-        return BadRequest("ID not found");
+        using var db = new ApplicationContext();
+       // DateTimeOffset.Now.ToUnixTimeSeconds()
+       // long unixTime = ((DateTimeOffset)date).ToUnixTimeSeconds();
+        var eve = new Event( name, date, timeStart, timeSpent,eventValue);
+        db.Events.AddRange(eve);
+        db.SaveChanges();
     }
-
-    [HttpGet()]
-    public List<Event> GetAll()
-    {
-        using (ApplicationContext db = new ApplicationContext())
-        {
-            var events = db.Events.ToList();
-            return events;
-        }
-    }
-    
-    //[HttpGet()]
-    //public IActionResult GetAllDayEvents()
-    //{
-    //    var todayEvents = new List<Event>();
-    //    foreach (var variable in Events)
-    //    {
-    //        if (variable.Date.Day.Equals(DateTime.Now.Day))
-    //        {
-    //            todayEvents.Add(variable);
-    //        }
-    //    }
-    //
-    //    if (todayEvents.Count > 0)
-    //    { 
-    //        return Ok(todayEvents);
-    //    }
-    //    return BadRequest("pizdos");
-    //}
     
     [HttpDelete()]
     [Route("{id}")]
@@ -95,33 +67,58 @@ public class EventsController : ControllerBase
             //
         }
     }
-    
-    [HttpPost()]
-    public void Post(string name, Date date, Time timeStart, TimeSpan timeSpent, int eventValue)
-    {
-        using (ApplicationContext db = new ApplicationContext())
-        {
-            var eve = new Event( name, date, timeStart, timeSpent,eventValue);
-            db.Events.AddRange(eve);
-            db.SaveChanges();
-        }
-        
-      
-    }
 
-    //[HttpGet()]
-    //public IActionResult GetActualEvent()
-    //{
-    //    var timeNow = TimeOnly.FromDateTime(DateTime.Now);
-    //    foreach (var variable in GetAllDayEvents())
-    //    {
-    //        if (variable.TimeStart > timeNow && variable.TimeStart.Add(variable.TimeSpent) < timeNow)
-    //        {
-    //            return Ok(variable);
-    //        }
-    //    }
-    //
-    //    return NotFound("Free time");
-    //}
+    [HttpGet()]
+    [Route("{id}")]
+    public IActionResult GetById(int id)
+    {
+        if (IsIdValid(id)) 
+        {return Ok(Events[id]);}
+        
+        return BadRequest("ID not found");
+    }
     
+    [HttpGet()]
+    public List<Event> GetAll()
+    {
+        using var db = new ApplicationContext();
+        var events = db.Events.ToList();
+        return events;
+    }
+    
+    [HttpGet("~/getothersomething")]
+    public List<Event> GetAllDayEvents()
+    {
+        var todayEvents = new List<Event>();
+        foreach (var variable in GetAll())
+        {
+            if (variable.Date.Day.Equals(DateTime.Now.Day))
+            {
+                todayEvents.Add(variable);
+            }
+        }
+    
+        if (todayEvents.Count > 0)
+        { 
+            return todayEvents;
+        }
+
+        return null;
+    }
+    
+    [HttpGet("~/getsomething")]
+    public IActionResult GetActualEvent()
+    {
+        var timeNow = TimeOnly.FromDateTime(DateTime.Now);
+        foreach (var variable in GetAllDayEvents())
+        {
+            if (timeNow.IsBetween(TimeOnly.FromDateTime(variable.TimeStart), 
+                    TimeOnly.FromDateTime(variable.TimeStart.Add(variable.TimeSpent))))
+            {
+                return Ok(variable);
+            }
+        }
+    
+        return NotFound("Free time");
+    }
 }
