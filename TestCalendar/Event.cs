@@ -7,11 +7,11 @@ public class Event
 
     public string? Notes { get; set; }
 
-    public DateTime Date { get; set; }
+    public string Date { get; set; }
 
-    public DateTime TimeStart { get; set; }
+    public string TimeStart { get; set; }
 
-    public TimeSpan TimeSpent { get; set; }
+    public string TimeSpent { get; set; }
 
     public int EventValue { get; set; }
 
@@ -21,7 +21,7 @@ public class Event
 
     public Event() { }
 
-    public Event( string name, DateTime date, DateTime timeStart, TimeSpan timeSpent, int eventValue)
+    public Event( string name, string date, string timeStart, string timeSpent, int eventValue)
     {
         Name = name;
         Date = date;
